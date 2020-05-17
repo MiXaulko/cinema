@@ -1,5 +1,7 @@
 package ru.kirillov.cinema.entity
 
+import ru.kirillov.cinema.dto.SeatReservationDto
+import ru.kirillov.cinema.dto.SeatReservationInfoDto
 import javax.persistence.*
 import javax.persistence.GenerationType.*
 
@@ -14,9 +16,12 @@ class SeatReservation(var realPrice: Float,
                       var user: User,
                       @ManyToOne
                       @JoinColumn(name = "fk_seance_id")
-                      var seance: Seance
-) {
+                      var seance: Seance) {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     val id: Long = 0
+
+    fun toInfoDto(): SeatReservationInfoDto = SeatReservationInfoDto(id, row, column, realPrice, seance.name, seance.startTime)
+
+    fun toDto(): SeatReservationDto = SeatReservationDto(id, row, column)
 }

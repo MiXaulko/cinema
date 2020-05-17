@@ -1,6 +1,7 @@
 package ru.kirillov.cinema.repository
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -28,13 +29,10 @@ class SeatReservationRepositoryTest {
     @Autowired
     lateinit var roleRepository: RoleRepository
 
-    @Test
-    fun testFindAll() = assertEquals(seatReservationRepository.findAll().size, 0)
-
     fun insertRow(): SeatReservation {
-        val category = Category("30%", 30f);
+        val category = Category("30%", 30f)
         categoryRepository.save(category)
-        val role = roleRepository.findById(2L).orElseThrow()
+        val role = roleRepository.findById(2L).get()
         val user = User("user", category, role)
         userRepository.save(user)
 
@@ -43,12 +41,12 @@ class SeatReservationRepositoryTest {
         val seance = Seance("Seance", LocalDateTime.now(), price, 10, true, 10, 10)
         seanceRepository.save(seance)
 
-        val seatReservation = SeatReservation((seance.price * category.discount) / 100, 1, 1, user, seance);
-        return seatReservationRepository.save(seatReservation);
+        val seatReservation = SeatReservation((seance.price * category.discount) / 100, 1, 1, user, seance)
+        return seatReservationRepository.save(seatReservation)
     }
 
     @Test
-    fun testInsert(){
+    fun testInsert() {
         val seatReservation = insertRow()
         assertNotEquals(seatReservation.id, 0)
     }
@@ -59,7 +57,7 @@ class SeatReservationRepositoryTest {
         val seatReservation = insertRow()
         seatReservation.row = newRow
         seatReservationRepository.save(seatReservation)
-        val afterUpdate = seatReservationRepository.findById(seatReservation.id).orElseThrow();
+        val afterUpdate = seatReservationRepository.findById(seatReservation.id).get()
         assertEquals(afterUpdate.row, newRow)
     }
 
@@ -67,6 +65,19 @@ class SeatReservationRepositoryTest {
     fun testDelete() {
         val seatReservation = insertRow()
         seatReservationRepository.delete(seatReservation)
-        assertTrue(seatReservationRepository.findById(seatReservation.id).isEmpty)
+        assertFalse(seatReservationRepository.findById(seatReservation.id).isPresent)
+    }
+
+    @Test
+    fun testFindBySeance_IdAndRowAndColumn(){
+        val seatReservation = insertRow()
+        assertTrue(seatReservationRepository.findBySeance_IdAndRowAndColumn(seatReservation.seance.id,seatReservation.row,seatReservation.column).isPresent)
+    }
+
+    @Disabled
+    @Test
+    fun testFindProfitBySeanceId(){
+        val seatReservation = insertRow()
+        assertTrue(seatReservationRepository.findProfitBySeanceId(seatReservation.seance.id)>0)
     }
 }

@@ -11,8 +11,10 @@ class User(var login: String,
            var category: Category,
            @ManyToOne(fetch = LAZY)
            @JoinColumn(name = "fk_role_id")
-           var role: Role
-) {
+           var role: Role) {
+    @OneToMany(mappedBy = "user")
+    lateinit var seatReservations: List<SeatReservation>
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     val id: Long = 0

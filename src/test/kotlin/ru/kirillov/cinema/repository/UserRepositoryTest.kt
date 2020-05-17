@@ -18,19 +18,16 @@ class UserRepositoryTest {
     @Autowired
     lateinit var roleRepository: RoleRepository
 
-    @Test
-    fun testFindAll() = assertNotEquals(userRepository.findAll().size, 0)
-
-    fun insertRow(): User {
-        val category = categoryRepository.findById(1L).orElseThrow()
-        val role = roleRepository.findById(1L).orElseThrow()
-        val user = User("user", category, role)
+    fun insertRow(login: String): User {
+        val category = categoryRepository.findById(1L).get()
+        val role = roleRepository.findById(1L).get()
+        val user = User(login, category, role)
         return userRepository.save(user)
     }
 
     @Test
     fun testInsert() {
-        val user = insertRow()
+        val user = insertRow("")
         val userFromRepo = userRepository.findById(user.id)
 
         assertTrue(userFromRepo.isPresent)
@@ -39,17 +36,25 @@ class UserRepositoryTest {
     @Test
     fun testUpdate() {
         val newLogin = "newName"
-        val user = insertRow()
+        val user = insertRow("")
         user.login = newLogin
         userRepository.save(user)
-        val userFromRepo = userRepository.findById(user.id).orElseThrow()
+        val userFromRepo = userRepository.findById(user.id).get()
         assertEquals(userFromRepo.login, newLogin)
     }
 
     @Test
     fun testDelete() {
-        val user = insertRow()
+        val user = insertRow("")
         userRepository.delete(user)
-        assertTrue(userRepository.findById(user.id).isEmpty)
+        assertFalse(userRepository.findById(user.id).isPresent)
+    }
+
+    @Test
+    fun testFindByLogin(){
+        val login = "login"
+        insertRow(login)
+        val userFromDb = userRepository.findByLogin(login)
+        assertTrue(userFromDb.isPresent)
     }
 }

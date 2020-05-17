@@ -12,14 +12,9 @@ class RoleRepositoryTest {
     @Autowired
     lateinit var roleRepository: RoleRepository
 
-    @Test
-    fun testFindAll() {
-        assertNotEquals(roleRepository.findAll().size, 0)
-    }
-
     fun insertRow(): Role {
-        val role = Role("moderator");
-        return roleRepository.save(role);
+        val role = Role("moderator")
+        return roleRepository.save(role)
     }
 
     @Test
@@ -34,7 +29,7 @@ class RoleRepositoryTest {
         val role = insertRow()
         role.name = newName
         roleRepository.save(role)
-        val roleAfterUpdate = roleRepository.findById(role.id).orElseThrow();
+        val roleAfterUpdate = roleRepository.findById(role.id).get()
         assertEquals(roleAfterUpdate.name, newName)
     }
 
@@ -42,6 +37,6 @@ class RoleRepositoryTest {
     fun testDelete() {
         val role = insertRow()
         roleRepository.delete(role)
-        assertTrue(roleRepository.findById(role.id).isEmpty)
+        assertTrue(!roleRepository.findById(role.id).isPresent)
     }
 }

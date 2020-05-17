@@ -12,12 +12,9 @@ class CategoryRepositoryTest {
     @Autowired
     lateinit var categoryRepository: CategoryRepository
 
-    @Test
-    fun testFindAll() = assertNotEquals(categoryRepository.findAll().size, 0)
-
     fun insertRow(): Category {
-        val category = Category("category", 45f);
-        return categoryRepository.save(category);
+        val category = Category("category", 45f)
+        return categoryRepository.save(category)
     }
 
     @Test
@@ -32,7 +29,7 @@ class CategoryRepositoryTest {
         val category = insertRow()
         category.name = newName
         categoryRepository.save(category)
-        val categoryAfterUpdate = categoryRepository.findById(category.id).orElseThrow();
+        val categoryAfterUpdate = categoryRepository.findById(category.id).get()
         assertEquals(categoryAfterUpdate.name, newName)
     }
 
@@ -40,6 +37,6 @@ class CategoryRepositoryTest {
     fun testDelete() {
         val category = insertRow()
         categoryRepository.delete(category)
-        assertTrue(categoryRepository.findById(category.id).isEmpty)
+        assertTrue(!categoryRepository.findById(category.id).isPresent)
     }
 }
