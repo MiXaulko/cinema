@@ -41,7 +41,7 @@ class SeatReservationRepositoryTest {
         val seance = Seance("Seance", LocalDateTime.now(), price, 10, true, 10, 10)
         seanceRepository.save(seance)
 
-        val seatReservation = SeatReservation((seance.price * category.discount) / 100, 1, 1, user, seance)
+        val seatReservation = SeatReservation((seance.price * (100-category.discount) / 100), 1, 1, user, seance)
         return seatReservationRepository.save(seatReservation)
     }
 
@@ -74,10 +74,9 @@ class SeatReservationRepositoryTest {
         assertTrue(seatReservationRepository.findBySeance_IdAndRowAndColumn(seatReservation.seance.id,seatReservation.row,seatReservation.column).isPresent)
     }
 
-    @Disabled
     @Test
     fun testFindProfitBySeanceId(){
         val seatReservation = insertRow()
-        assertTrue(seatReservationRepository.findProfitBySeanceId(seatReservation.seance.id)>0)
+        assertTrue(seatReservationRepository.findProfitBySeanceId(1L)>0)
     }
 }
