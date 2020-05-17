@@ -52,25 +52,21 @@ class ClientServiceImpl(val seanceRepository: SeanceRepository,
 
         val currentProfit = seatReservationRepository.findProfitBySeanceId(seance.id)
 
-        //Если минимальная выгода с сеанса достигнута - покупают только социальные + обычные если до начала < 15 мин
-        if (currentProfit >= seance.minimumProfit) {
-            if (category.discount > 0) {
-                updatePriceForSocial(category, seance, reservation)
-            } else if (now().plusMinutes(15).isBefore(seance.startTime)) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, CANNOT_BUY_TICKET)
-            }
-        } else {
-            //Можно покупать всем
-            if (category.discount > 0) {
-                updatePriceForSocial(category, seance, reservation)
-            }
+        /*
+            Для социальных граждан бронирование билетов доступно всегда
+            Для обычных - если осталось < 15 мин до начала, либо минимальная выгода с сеанса не достигнута
+        */
+        if (category.discount > 0) {
+            updatePriceForSocial(category, seance, reservation)
+        } else if ((currentProfit >= seance.minimumProfit) && now().plusMinutes(15).isBefore(seance.startTime)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, CANNOT_BUY_TICKET)
         }
 
         seatReservationRepository.save(reservation)
         return reservation.toInfoDto()
     }
 
-    private fun updatePriceForSocial(category: Category, seance: Seance, reservation: SeatReservation){
+    private fun updatePriceForSocial(category: Category, seance: Seance, reservation: SeatReservation) {
         if (seance.enabledPrivileges) {
             reservation.realPrice *= ((100 - category.discount) / 100)
         }
