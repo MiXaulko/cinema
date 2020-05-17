@@ -1,6 +1,7 @@
 package ru.kirillov.cinema.entity
 
 import ru.kirillov.cinema.dto.SeanceDto
+import ru.kirillov.cinema.dto.SeanceForCreatingDto
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -23,5 +24,7 @@ class Seance(var name: String,
     @OneToMany(mappedBy = "seance")
     lateinit var seatReservations: List<SeatReservation>
 
-    fun toDto(seance: Seance): SeanceDto = SeanceDto(seance.id, seance.name, seance.startTime, seance.price, seance.numberOfRows, seance.numberOfColumns)
+    fun toDto(): SeanceDto = SeanceDto(id, name, startTime, price, numberOfRows, numberOfColumns)
+
+    fun toCreatingDto(): SeanceForCreatingDto = SeanceForCreatingDto(id, name, startTime, price, minimumProfit, enabledPrivileges, numberOfRows, numberOfColumns)
 }

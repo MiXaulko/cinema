@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 import org.springframework.web.server.ResponseStatusException
+import ru.kirillov.cinema.dto.SeanceForCreatingDto
 import ru.kirillov.cinema.entity.Seance
 import ru.kirillov.cinema.repository.SeanceRepository
 import ru.kirillov.cinema.util.TIME_SHOULD_BE_IN_THE_FUTURE
@@ -30,14 +31,14 @@ class AdminServiceTest {
 
     @Test
     fun testAddingSeance() {
-        val seance = Seance("seance", now(), 300, 30, false, 10, 10)
+        val seance = SeanceForCreatingDto(0, "seance", now(), 300, 30, false, 10, 10)
         adminService.addSeance(seance)
         assertTrue(seanceRepository.findAll().size > 0)
     }
 
     @Test
     fun testAddingWrongSeance() {
-        val seance = Seance("seance", now().minusHours(1), 300, 30, false, 10, 10)
+        val seance = SeanceForCreatingDto(0, "seance", now().minusHours(1), 300, 30, false, 10, 10)
 
         val exception = assertThrows<ResponseStatusException> {
             adminService.addSeance(seance)

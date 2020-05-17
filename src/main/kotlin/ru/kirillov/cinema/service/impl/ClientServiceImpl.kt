@@ -27,7 +27,7 @@ class ClientServiceImpl(val seanceRepository: SeanceRepository,
         val seances = seanceRepository.getSeancesByStartTimeAfter(now())
         val dtos = seances
                 .stream()
-                .map { e -> e.toDto(e) }
+                .map { e -> e.toDto() }
                 .collect(Collectors.toList())
         return dtos
     }
