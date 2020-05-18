@@ -47,7 +47,7 @@ class SeanceRepositoryTest {
     fun testGetSeancesByStartTimeAfter() {
         val seance = insertRow()
         seanceRepository.save(seance)
-        assertEquals(seanceRepository.getSeancesByStartTimeAfter(now()).size, 1)
+        assertTrue(seanceRepository.getSeancesByStartTimeAfter(now()).isNotEmpty())
     }
 
 }
